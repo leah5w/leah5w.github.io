@@ -4,13 +4,21 @@
   
     
     <entry>
-      <title>test</title>
+      <title></title>
       <link href="/2024/06/04/test/"/>
       <url>/2024/06/04/test/</url>
       
         <content type="html"><![CDATA[<p>这是测试用的</p>]]></content>
       
       
+      
+        <tags>
+            
+            <tag> tag1 </tag>
+            
+            <tag> tag2 </tag>
+            
+        </tags>
       
     </entry>
     
