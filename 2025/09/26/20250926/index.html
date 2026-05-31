@@ -1,0 +1,333 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>CFL-reachability与Graspan | LEAHW</title><meta name="author" content="LEAHW"><meta name="copyright" content="LEAHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="FFF5EE"><meta name="description" content="组会分享">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CFL-reachability与Graspan">
+<meta property="og:url" content="https://leahw.top/2025/09/26/20250926/index.html">
+<meta property="og:site_name" content="LEAHW">
+<meta property="og:description" content="组会分享">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://leahw.top/images/post_img/20250926.assets/5W5A7988.jpg">
+<meta property="article:published_time" content="2025-09-26T12:51:39.000Z">
+<meta property="article:modified_time" content="2026-05-31T13:01:12.739Z">
+<meta property="article:author" content="LEAHW">
+<meta property="article:tag" content="CFL-reachability">
+<meta property="article:tag" content="程序分析">
+<meta property="article:tag" content="静态分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leahw.top/images/post_img/20250926.assets/5W5A7988.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "CFL-reachability与Graspan",
+  "url": "https://leahw.top/2025/09/26/20250926/",
+  "image": "https://leahw.top/images/post_img/20250926.assets/5W5A7988.jpg",
+  "datePublished": "2025-09-26T12:51:39.000Z",
+  "dateModified": "2026-05-31T13:01:12.739Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LEAHW",
+      "url": "https://leahw.top"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/dec_img/Cat.png"><link rel="canonical" href="https://leahw.top/2025/09/26/20250926/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'FFF5EE')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CFL-reachability与Graspan',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/dec_img/Cat.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 图库</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-color: #80808F;"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/images/dec_img/Cat.png" alt="Logo"><span class="site-name">LEAHW</span></a><a class="nav-page-title" href="/"><span class="site-name">CFL-reachability与Graspan</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 图库</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">CFL-reachability与Graspan</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-09-26T12:51:39.000Z" title="发表于 2025-09-26 20:51:39">2025-09-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-31T13:01:12.739Z" title="更新于 2026-05-31 21:01:12">2026-05-31</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h3 id="CFL-reachability"><a href="#CFL-reachability" class="headerlink" title="CFL-reachability"></a>CFL-reachability</h3><p>在图分析里，我们经常会遇到“能否从某个点走到另一个点”的问题，这就是可达性问题。如果路径必须满足某些约束（例如成对匹配的调用&#x2F;返回），那就不是普通的图可达性，而是更复杂的带语言约束的可达性。</p>
+<p>CFL-reachability就是在图上寻找一条路径，使得这条路径上的边标签序列属于某个上下文无关语言 (Context-Free Language, CFL)。</p>
+<h5 id="上下文无关文法"><a href="#上下文无关文法" class="headerlink" title="上下文无关文法"></a>上下文无关文法</h5><p>文法是用来 描述语言（字符串集合） 的一种规则系统。</p>
+<p><img src="/../images/post_img/20250926.assets/image-20251009210554686.png"></p>
+<p>例如，这个文法：</p>
+<p><img src="/../images/post_img/20250926.assets/image-20251009210723557.png"></p>
+<p>可以推出如下字符串：””, “()”, “()()”, “(())”, “(()())”, …</p>
+<p>简单来说，核心思想是为图上的路径赋予“语法”或“语义”。不是任意路径都表示一个有效的信息流，只有那些符合特定“语法规则”的路径才有效。这个“语法规则”就是上下文无关文法。这样一来，图上从点u到点v的可达性问题，就变成了：是否存在一条从u到v的路径，其路径上的标签序列能够由给定的上下文无关文法生成。</p>
+<h3 id="把静态分析问题转化成图的可达性问题"><a href="#把静态分析问题转化成图的可达性问题" class="headerlink" title="把静态分析问题转化成图的可达性问题"></a>把静态分析问题转化成图的可达性问题</h3><h5 id="为什么可以把程序分析问题转化成CFL-reachability问题？"><a href="#为什么可以把程序分析问题转化成CFL-reachability问题？" class="headerlink" title="为什么可以把程序分析问题转化成CFL-reachability问题？"></a>为什么可以把程序分析问题转化成CFL-reachability问题？</h5><p>在静态分析中，我们经常关心一些程序元素之间的关系，例如：</p>
+<ul>
+<li>指针分析：某个指针p 可能指向哪些对象？</li>
+<li>数据流分析：某个变量的值可能来自哪些定义？</li>
+<li>安全检查：某个资源是否被正确使用？</li>
+</ul>
+<p>这些问题本质上都涉及到：“能不能从某个程序点（或变量、对象）到达另一个程序点？”</p>
+<h4 id="CFL-reachability如何把静态分析问题转化成图的可达性问题？"><a href="#CFL-reachability如何把静态分析问题转化成图的可达性问题？" class="headerlink" title="CFL-reachability如何把静态分析问题转化成图的可达性问题？"></a>CFL-reachability如何把静态分析问题转化成图的可达性问题？</h4><p>我们需要根据分析的目标，将程序代码建模成一个图（通常是有向图），并为图的边赋予特定的标签。</p>
+<ul>
+<li><strong>节点（Vertices）</strong>：可能代表程序中的程序变量、内存对象、表达式、调用点等等。</li>
+<li><strong>边（Edges）</strong>：代表节点之间的关系或操作，如赋值、运算、参数传递等等。每条边都有一个标签（Label），这个标签来自于一个有限的字母表。</li>
+</ul>
+<p>这样，程序分析就变成了图上的路径可达性问题。</p>
+<h5 id="例子——指针分析"><a href="#例子——指针分析" class="headerlink" title="例子——指针分析"></a>例子——指针分析</h5><p>以不考虑程序中控制流的指针分析为例：分析哪些指针变量可能指向哪些堆对象。在图模型中，这变成了一个可达性问题。</p>
+<p><strong>节点</strong>：程序里的表达式（如变量 a, b, &amp;c）。</p>
+<p><strong>边</strong>：值的流动，分三类：</p>
+<ul>
+<li>A-edge (Assignment)：赋值语句 a &#x3D; b 建立A边 b → a。</li>
+<li>D-edge (Dereference)：对于解引用a，建立边 a → a；类似的，对于取值表达式&amp;a，可以建立边&amp;a → a。</li>
+<li>M-edge (Malloc&#x2F;Alloc)：对于内存分配操作a &#x3D; malloc( ) 建立从特殊节点Alloc → a的M边。</li>
+</ul>
+<p>这样，程序就被转化为一张表达式图，表示指针值在程序中的传播。</p>
+<p>如果某个分配点（malloc 对象）能通过图中一条满足规则的路径到达变量节点，那么该变量就可能指向该对象。</p>
+<p>单纯的“路径可达”还不够，因为指针分析要保证某些操作（取址、解引用）的匹配性。这里用到上下文无关文法 (CFG) 来描述合法路径模式。</p>
+<p><strong>对象流 （Object Flow）</strong>：OF ::&#x3D; M VF</p>
+<p><strong>值流（Value Flow）</strong>：VF ::&#x3D; (A MA?)*</p>
+<p>要使变量v指向对象o（即malloc分配的内存），在表达式图中必须存在一条从o到v的OF路径。OF的定义：它必须以一条分配（M）边开始，后跟一条将对象地址传播到变量的VF路径。VF路径可以是一系列简单赋值（A）边的序列，也可以是赋值边与MA（内存别名）路径的结合。</p>
+<p>当两个左值表达式可能指向相同的内存位置时，它们构成内存别名；而当这两个表达式可能计算出相同值时，则构成值别名。</p>
+<p><strong>内存别名 （Memory Alias）</strong>：<img src="/../images/post_img/20250926.assets/image-20251012183319040.png"></p>
+<p>每条边都有一个带”横线”标签的逆向边。例如，对于每条边<img src="/../images/post_img/20250926.assets/image-20251012183335680.png">，会自动存在边<img src="/../images/post_img/20250926.assets/image-20251012183345687.png">。<img src="/../images/post_img/20250926.assets/image-20251012183359222.png">表示解引用的逆向操作，本质上等同于取地址操作。若(1)获取变量a的地址并写入变量b，(2)b是另一个变量c的值别名，(3)对c执行解引用操作，其结果与a中的值相同。</p>
+<p><strong>值别名（Value Alias）</strong>：<img src="/../images/post_img/20250926.assets/image-20251012183546073.png"></p>
+<p>若(1)变量a与b互为内存别名，且(2)通过两条VF路径将a和b的值分别传播至另外两个变量c和d，则c和d包含相同的指针值。</p>
+<p> 如上，就将指针分析问题转化为了图可达性问题。</p>
+<p><img src="/../images/post_img/20250926.assets/image-20251012183620837.png"></p>
+<h3 id="经典CFL-reachability算法"><a href="#经典CFL-reachability算法" class="headerlink" title="经典CFL-reachability算法"></a>经典CFL-reachability算法</h3><p><img src="/../images/post_img/20250926.assets/image-20251012183725143.png"></p>
+<p><img src="/../images/post_img/20250926.assets/image-20251012183944381.png"></p>
+<p>标准算法维护一个工作列表W来存储待处理的新边。在可达性求解过程中，算法迭代地从W中弹出一个项，遍历与项相邻的边，并根据文法将新生成的边加入图和工作列表。</p>
+<h3 id="Graspan"><a href="#Graspan" class="headerlink" title="Graspan"></a>Graspan</h3><p>Graspan专门为跨过程静态分析（尤其是 CFL-reachability）设计。</p>
+<p>1.单机磁盘支持：可以在普通开发者机器上运行，不依赖集群。图太大放不下内存时，可启用外存支持机制。</p>
+<p>2.并行边对(Edge-Pair) 计算模型：每次迭代加载两个分区，在边对之间做合并，批量生成新边。并行化：不同顶点的边表可以在多个线程中独立处理。内置在线去重和快速合并算法，避免重复边导致的无终止或性能退化。</p>
+<h4 id="Preprocessing"><a href="#Preprocessing" class="headerlink" title="Preprocessing"></a>Preprocessing</h4><p><img src="/../images/post_img/20250926.assets/image-20251012192106108.png"></p>
+<p>将顶点划分为逻辑区间（interval），每个区间定义一个分区，分区包含所有源点属于该区间的边。</p>
+<p>分区内部，边按源点和目标点排序（按照边的源顶点ID进行排序，具有相同源顶点的边会被连续存储，并按照其靶区顶点ID排序。</p>
+<p>图(a)展示了一个简单的有向图示例。假设Graspan将其顶点划分为三个区间0-2、3-4和5-6，图(b)则展示了对应的分区布局结构，这样可以实现快速的边插入与查重。</p>
+<p>每次计算只加载两个分区到内存，称为一个 superstep，并在这两个分区之间进行操作。</p>
+<p>预处理还生成三类元数据：</p>
+<p><strong>1.Degree file（度文件）</strong></p>
+<p>每个分区都有一个度文件，记录分区内每个顶点的入度和出度。</p>
+<p>用途：提前知道每个顶点的边数，便于分配存储空间（避免边数组频繁扩展和复制）。</p>
+<p><strong>2.VIT（顶点区间表）</strong></p>
+<p>把所有顶点划分为若干区间，每个区间对应一个分区。VIT 记录这些区间的上下界。</p>
+<p>用途：快速定位一个顶点属于哪个分区，以及在重分区时更新区间划分。</p>
+<p><strong>3.DDM（目标分布映射）</strong></p>
+<p>对于每个分区p，记录它的边指向其他分区 q 的比例。本质上是一个矩阵：行表示源分区p，列表示目标分区 q，单元格的值 &#x3D; 从 p 指向 q 的边占比（百分比）。</p>
+<p>用途：调度算法会根据DDM 来决定优先加载哪些分区（因为匹配边的机会更多）。还能用来判断是否还有新的边需要生成，从而决定分析是否可以终止。</p>
+<h4 id="E-P"><a href="#E-P" class="headerlink" title="E-P"></a>E-P</h4><p>Graspan 的核心计算模型：边对中心计算（Edge-Pair Centric Computation）</p>
+<p>这一模型的限制是文法右部最多只能有两个符号。分析过程被组织成一系列supersteps。</p>
+<p>每次supersteps：</p>
+<p>1.加载两个分区（从磁盘到内存）；</p>
+<p>2.在这两个分区的边表中做合并操作；</p>
+<p>3.根据文法规则产生新的边；</p>
+<p>4.如果分区过大，则触发 repartition。</p>
+<p>终止条件：没有新的边可以生成时，分析结束。</p>
+<p>每个顶点的边表用两个数组表示：</p>
+<p>**Oᵥ (Old edges)：**已经处理过的边；</p>
+<p>**Dᵥ (Delta edges)：**当前迭代中新发现的边。</p>
+<p>这样可以避免重复工作，只需要处理与新边相关的组合</p>
+<p><img src="/../images/post_img/20250926.assets/image-20260531203611197.png"></p>
+<p>初始化：Oᵥ &#x3D; ∅, Dᵥ &#x3D; 原始边。</p>
+<p>迭代：</p>
+<ol>
+<li>Oᵥ + Dᵤ → 新边</li>
+<li>Dᵥ + (Oᵤ ∪ Dᵤ) → 新边</li>
+<li>更新：Oᵥ ← Oᵥ ∪ Dᵥ, Dᵥ ← 新边 – Oᵥ</li>
+</ol>
+<p>收敛：直到所有Dᵥ &#x3D; ∅ → 没有新边产生。</p>
+<p><img src="/../images/post_img/20250926.assets/image-20260531203731991.png"></p>
+<p><img src="/../images/post_img/20250926.assets/image-20260531203755227.png"></p>
+<h5 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h5><p>边对匹配：核心就是检查(L₁, L₂) 是否符合文法规则。</p>
+<p>批量处理：用归并排序合并多个有序边表，比逐条扫描快很多。</p>
+<p>在线去重：避免重复边导致无限循环或冗余计算。</p>
+<p>增量更新：只处理新边Dᵥ，大幅减少不必要的重复计算。</p>
+<p>可以把这个算法理解成：每个顶点维护两份“通讯录”：一份是“老朋友 (Oᵥ)”，一份是“新认识的人 (Dᵥ)”。每次迭代时，老朋友帮你介绍他们的新朋友，新朋友帮你介绍所有朋友→ 不断扩展认识的人。等到没有新朋友了，朋友圈就稳定了。</p>
+<p>如果允许重复：算法可能永远不收敛（不断生成相同边）。或者即使能收敛，也会在时间和空间上造成巨大冗余（存储大量重复边，做很多无用计算）。</p>
+<p>如果用一种很直接传统的方法，在生成新边 v –K–&gt; x 之前，再扫描一次 v 的出边，检查是否已经存在相同的边。每生成一条新边，都要额外做一次查重扫描。在大规模图分析（数十亿条边）中，这样的代价非常高。</p>
+<p>离线去重的替代方案：可以等分区写回磁盘时再统一去重，从而省掉在线检查的成本。风险：如果完全不做在线去重，可能导致算法不断把同一条边当作“新边”反复加入，这样主循环（Line 6）会一直认为有新工作，导致无法终止。</p>
+<p>Graspan的算法实现了快速边添加与在线重复检测，而且是算法自带的“副产品”：</p>
+<p>由于所有输入列表均已预排序，MATCHANDMERGESORTEDARRAYS可通过以下方式高效实现：在输入列表切片元素中反复查找最小值（采用O(log|V|)时间复杂度的最小堆算法），并将其复制到输出数组。该算法整体具有O(|E|log|V|)的时间复杂度，比逐个扫描边（O(|E|²)）更高效，因为|V|远小于|E|。此外，在合并过程中可自动完成边去重——若多个元素具有相同最小值，仅将其中一个复制到输出数组。在复制前会执行标签匹配——若边的标签不合法，则不会被复制到输出中。</p>
+<h4 id="Postprocessing"><a href="#Postprocessing" class="headerlink" title="Postprocessing"></a>Postprocessing</h4><ul>
+<li>通过调度器基于DDM 选择需要的分区对，并根据 delta 值判断是否还需要继续迭代。</li>
+<li>终止条件：当所有分区对的delta 为 0 时，即不再产生新边，算法结束。</li>
+<li>提供API 输出分析结果。</li>
+</ul>
+<p>当某个分区的规模超过阈值（例如某个参数）时，就会触发重新分区。由于边列表已排序，Graspan能轻松对过大的分区进行重新划分。该系统会将原始顶点区间拆分为两个较小区间，边结构会自动重组。其目标是使两个小顶点区间拥有相近数量的边，从而确保新生成的分区规模相当。此时需用新区间信息更新顶点区间表(VIT)。若在superstep运算过程中新增过多边且已加载分区大小接近内存容量，也会在superstep中期触发重新分区。</p>
+<p>当新的superstep阶段开始时，调度器会选择两个新分区加入运算。由于前一个superstep阶段已完成计算的分区可能被再次选中，Graspan系统会延迟将分区写回磁盘的操作，直至调度器完成新分区的选择。若被选中的分区已驻留内存，则可显著减少磁盘I&#x2F;O操作的开销。</p>
+<p>调度算法的两个目标</p>
+<p>1.最大化潜在可匹配的边对数量即每次选择的分区对(p, q)，希望它们之间能产生尽量多的新边。</p>
+<p>2.尽量复用内存中的分区因为从磁盘加载分区很耗时，如果某个分区已经在内存里，就优先选择它和其他分区配对。</p>
+<ul>
+<li>使用DDM，DDM 记录不同分区之间的边分布比例。比如：从分区 p 到 q 的边占 p 总边数的百分比。这个比例反映了 p 和 q 之间可能的匹配机会。</li>
+<li>引入变化率δ(p, q)：单纯用DDM 的静态百分比，不足以反映“最近是否还有新变化”。所以，Graspan 在每个 DDM 单元格中额外记录一个 变化率 δ(p, q)。δ(p, q) &#x3D; 自上次加载p和q以来，p→q 的边数比例变化。如果p和q从未一起加载过，δ(p, q) 就等于完整比例。</li>
+<li>调度策略：选择一对分区(p, q)，使得δ(p, q) + δ(q, p)最大。如果有多个分区对得分相近（在用户设定范围内），就选包含已在内存中的分区的那一对。这样减少磁盘I&#x2F;O 开销。</li>
+<li>终止条件：如果某对分区(p, q) 的δ(p, q) + δ(q, p) &#x3D; 0，说明这两个分区之间不可能再产生新边，就不必再对它们一起加载。当DDM中所有单元格的δ都为 0 → 没有新的边可生成 → 分析结束。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leahw.top">LEAHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leahw.top/2025/09/26/20250926/">https://leahw.top/2025/09/26/20250926/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leahw.top" target="_blank">LEAHW</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/">静态分析</a><a class="post-meta__tags" href="/tags/%E7%A8%8B%E5%BA%8F%E5%88%86%E6%9E%90/">程序分析</a><a class="post-meta__tags" href="/tags/CFL-reachability/">CFL-reachability</a></div><div class="post-share"><div class="social-share" data-image="/images/post_img/20250926.assets/5W5A7988.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2024/06/25/20240625/" title="基于YOLOv8的水下目标检测"><img class="cover" src="/images/post_img/20240625.assets/5W5A8020.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">基于YOLOv8的水下目标检测</div></div><div class="info-2"><div class="info-item-1">机器学习与深度学习的结课大作业，浅记一下。 安装YOLOv8是YOLO系列模型的较新版本。和其它版本不同的是，该仓库并非起名为YOLOv8，而是公司名ultralytics，因为他们想将此版本作为一个通用库，以方便调用和部署。 所以可以直接安装ultralytics的库，也可以选择下载源码：git clone https://github.com/ultralytics/ultralytics.git 数据预处理由于光线的选择性衰减与水中粒子散射问题，水下图像会表现出颜色扭曲、细节模糊、对比度低的问题。 光线在水中的传播衰减与陆地的传播衰减是不同的，它是一种不均匀的且依赖于波长特性的衰减。红光是可见光中波长最长的，在传播时，红光最先消失，所以水下的照片都会呈现出蓝色或者绿色的色调；同时不同水质中的微小颗粒也会在图像中引入一系列噪声，水体中的粒子对于光有反射作用，当其反射的光到达相机时会对所成的像产生散射效果，散射使成像的细节变得模糊影响图像的质量。 对数据增强的步骤如下: 分别定义了如下函数： channel_split：用于将给定图像的RGB通道分开，并生成三个新图像，每个图像...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/dec_img/Cat.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LEAHW</div><div class="author-info-description">家人永远平安健康</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/leah5w" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">本站加载很慢请耐心等待</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#CFL-reachability"><span class="toc-number">1.</span> <span class="toc-text">CFL-reachability</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E6%97%A0%E5%85%B3%E6%96%87%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">上下文无关文法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%8A%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E8%BD%AC%E5%8C%96%E6%88%90%E5%9B%BE%E7%9A%84%E5%8F%AF%E8%BE%BE%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">把静态分析问题转化成图的可达性问题</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E4%BB%A5%E6%8A%8A%E7%A8%8B%E5%BA%8F%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E8%BD%AC%E5%8C%96%E6%88%90CFL-reachability%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">2.1.</span> <span class="toc-text">为什么可以把程序分析问题转化成CFL-reachability问题？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CFL-reachability%E5%A6%82%E4%BD%95%E6%8A%8A%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E9%97%AE%E9%A2%98%E8%BD%AC%E5%8C%96%E6%88%90%E5%9B%BE%E7%9A%84%E5%8F%AF%E8%BE%BE%E6%80%A7%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">2.2.</span> <span class="toc-text">CFL-reachability如何把静态分析问题转化成图的可达性问题？</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90%E2%80%94%E2%80%94%E6%8C%87%E9%92%88%E5%88%86%E6%9E%90"><span class="toc-number">2.2.1.</span> <span class="toc-text">例子——指针分析</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%8F%E5%85%B8CFL-reachability%E7%AE%97%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">经典CFL-reachability算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Graspan"><span class="toc-number">4.</span> <span class="toc-text">Graspan</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Preprocessing"><span class="toc-number">4.1.</span> <span class="toc-text">Preprocessing</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#E-P"><span class="toc-number">4.2.</span> <span class="toc-text">E-P</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E7%82%B9"><span class="toc-number">4.2.1.</span> <span class="toc-text">关键点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Postprocessing"><span class="toc-number">4.3.</span> <span class="toc-text">Postprocessing</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/09/26/20250926/" title="CFL-reachability与Graspan"><img src="/images/post_img/20250926.assets/5W5A7988.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CFL-reachability与Graspan"/></a><div class="content"><a class="title" href="/2025/09/26/20250926/" title="CFL-reachability与Graspan">CFL-reachability与Graspan</a><time datetime="2025-09-26T12:51:39.000Z" title="发表于 2025-09-26 20:51:39">2025-09-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/25/20240625/" title="基于YOLOv8的水下目标检测"><img src="/images/post_img/20240625.assets/5W5A8020.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于YOLOv8的水下目标检测"/></a><div class="content"><a class="title" href="/2024/06/25/20240625/" title="基于YOLOv8的水下目标检测">基于YOLOv8的水下目标检测</a><time datetime="2024-06-25T14:41:00.000Z" title="发表于 2024-06-25 22:41:00">2024-06-25</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By LEAHW</span></div><div class="footer_custom_text">Hello, world!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23liPIFBlDAhcf9qTy',
+      clientSecret: '5450eca34e01f6e96932ceedff212d9309086705',
+      repo: 'leah5w.github.io',
+      owner: 'leah5w',
+      admin: ['leah5w'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '7e6ad58c1be8adfed4a2ce009e4c0bed'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
